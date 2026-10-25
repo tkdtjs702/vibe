@@ -1,0 +1,183 @@
+.page {
+  min-height: 100svh;
+  padding: 40px 20px;
+  background: #f4f7fb;
+}
+
+.content {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: 36px;
+  border: 1px solid #dbe3ef;
+  border-radius: 20px;
+  background: #fff;
+}
+
+.eyebrow {
+  color: #2858c7;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.content h1 {
+  margin-top: 10px;
+  font-size: clamp(30px, 5vw, 44px);
+}
+
+.description {
+  margin-top: 12px;
+  color: #58657a;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: 180px 150px minmax(220px, 1fr);
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.controls label {
+  display: grid;
+  gap: 7px;
+  color: #26354e;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.controls input,
+.controls select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid #bec9d9;
+  border-radius: 9px;
+  background: #fff;
+  color: #172033;
+  font: inherit;
+}
+
+.demoButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.demoButtons button,
+.statusPanel button {
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid #9eafe0;
+  border-radius: 8px;
+  background: #eef3ff;
+  color: #173f9f;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid #dbe3ef;
+  border-radius: 12px;
+}
+
+.result {
+  display: grid;
+  gap: 12px;
+}
+
+.resultMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  color: #53627a;
+  font-size: 14px;
+}
+
+.resultMeta strong {
+  color: #1e3154;
+}
+
+.tableWrap table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.tableWrap th,
+.tableWrap td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e5ebf3;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tableWrap th {
+  background: #f6f8fc;
+  color: #35445c;
+  font-size: 14px;
+}
+
+.tableWrap th:nth-child(2),
+.tableWrap th:nth-child(3),
+.tableWrap td:nth-child(2),
+.tableWrap td:nth-child(3) {
+  text-align: left;
+}
+
+.tableWrap tr:last-child td {
+  border-bottom: 0;
+}
+
+.statusPanel {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  min-height: 230px;
+  place-content: center;
+  padding: 24px;
+  border: 1px dashed #b8c6da;
+  border-radius: 12px;
+  background: #fafcff;
+  color: #43526a;
+  text-align: center;
+}
+
+.statusDescription {
+  max-width: 620px;
+  margin: 0;
+  color: #5c6b82;
+  line-height: 1.6;
+}
+
+.guide {
+  margin-top: 28px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #f6f8fc;
+}
+
+.guide h2 {
+  font-size: 17px;
+}
+
+.guide ul {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0 0 20px;
+  color: #4d5c73;
+  line-height: 1.6;
+}
+
+@media (max-width: 720px) {
+  .content {
+    padding: 24px 16px;
+  }
+
+  .controls {
+    grid-template-columns: 1fr;
+  }
+}
