@@ -16,6 +16,7 @@ describe("box-office demo fixture", () => {
     });
     expect(entries[0].salesAmt).toBeTypeOf("number");
     expect(entries[0].audiCnt).toBeTypeOf("number");
+    expect(entries[0].openDt).toBe("2026-09-03");
   });
 
   it("returns a normal empty result outside the sample period", () => {
@@ -45,5 +46,33 @@ describe("box-office demo fixture", () => {
         audiAcc: "100",
       }),
     ).toThrow("Invalid salesAmt");
+  });
+
+  it("normalizes KOBIS compact dates and rejects an invalid rank", () => {
+    expect(
+      normalizeBoxOfficeEntry({
+        movieCd: "20260001",
+        movieNm: "바다의 노래",
+        rank: "1",
+        openDt: "20260903",
+        salesAmt: "1",
+        audiCnt: "1",
+        salesAcc: "1",
+        audiAcc: "1",
+      }).openDt,
+    ).toBe("2026-09-03");
+
+    expect(() =>
+      normalizeBoxOfficeEntry({
+        movieCd: "20260001",
+        movieNm: "바다의 노래",
+        rank: "0",
+        openDt: "20260903",
+        salesAmt: "1",
+        audiCnt: "1",
+        salesAcc: "1",
+        audiAcc: "1",
+      }),
+    ).toThrow("Invalid rank");
   });
 });

@@ -40,16 +40,57 @@ const toNonNegativeInteger = (value: string, field: string) => {
   return parsed;
 };
 
-export const normalizeBoxOfficeEntry = (entry: RawBoxOfficeEntry): BoxOfficeEntry => ({
-  movieCd: entry.movieCd,
-  movieNm: entry.movieNm,
-  openDt: entry.openDt,
-  rank: toNonNegativeInteger(entry.rank, "rank"),
-  salesAmt: toNonNegativeInteger(entry.salesAmt, "salesAmt"),
-  audiCnt: toNonNegativeInteger(entry.audiCnt, "audiCnt"),
-  salesAcc: toNonNegativeInteger(entry.salesAcc, "salesAcc"),
-  audiAcc: toNonNegativeInteger(entry.audiAcc, "audiAcc"),
-});
+const toPositiveInteger = (value: string, field: string) => {
+  const parsed = toNonNegativeInteger(value, field);
+  if (parsed < 1) {
+    throw new Error(`Invalid ${field}`);
+  }
+  return parsed;
+};
+
+const normalizeOpenDate = (value: string) => {
+  if (value === "") {
+    return value;
+  }
+
+  const normalized = /^\d{8}$/.test(value)
+    ? `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)}`
+    : value;
+  const parsed = new Date(`${normalized}T00:00:00.000Z`);
+
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(normalized) ||
+    Number.isNaN(parsed.getTime()) ||
+    parsed.toISOString().slice(0, 10) !== normalized
+  ) {
+    throw new Error("Invalid openDt");
+  }
+
+  return normalized;
+};
+
+export const normalizeBoxOfficeEntry = (entry: RawBoxOfficeEntry): BoxOfficeEntry => {
+  const movieCd = entry.movieCd.trim();
+  const movieNm = entry.movieNm.trim();
+
+  if (!movieCd) {
+    throw new Error("Invalid movieCd");
+  }
+  if (!movieNm) {
+    throw new Error("Invalid movieNm");
+  }
+
+  return {
+    movieCd,
+    movieNm,
+    openDt: normalizeOpenDate(entry.openDt),
+    rank: toPositiveInteger(entry.rank, "rank"),
+    salesAmt: toNonNegativeInteger(entry.salesAmt, "salesAmt"),
+    audiCnt: toNonNegativeInteger(entry.audiCnt, "audiCnt"),
+    salesAcc: toNonNegativeInteger(entry.salesAcc, "salesAcc"),
+    audiAcc: toNonNegativeInteger(entry.audiAcc, "audiAcc"),
+  };
+};
 
 const periodMultiplier: Record<PeriodType, number> = {
   daily: 1,

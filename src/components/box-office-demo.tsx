@@ -11,10 +11,10 @@ type BoxOfficeResponse = {
     entries: BoxOfficeEntry[];
   };
   meta: {
-    dataMode: "demo";
+    dataMode: "demo" | "live";
     date: string;
     periodType: PeriodType;
-    source: "fixture";
+    source: "fixture" | "kobis" | "cache";
     fetchedAt: string;
     isEmpty: boolean;
   };
@@ -36,12 +36,14 @@ export function BoxOfficeDemo() {
   const [queryMeta, setQueryMeta] = useState<QueryMeta | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
 
   useEffect(() => {
     const controller = new AbortController();
     const load = async () => {
       setIsLoading(true);
       setHasError(false);
+      setErrorMessage("데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
 
       try {
         const response = await fetch(
@@ -49,7 +51,8 @@ export function BoxOfficeDemo() {
           { signal: controller.signal },
         );
         if (!response.ok) {
-          throw new Error("Box-office fixture request failed");
+          const failure = (await response.json().catch(() => null)) as { error?: { message?: string } } | null;
+          throw new Error(failure?.error?.message ?? "데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
         }
 
         const payload = (await response.json()) as BoxOfficeResponse;
@@ -60,6 +63,7 @@ export function BoxOfficeDemo() {
           setHasError(true);
           setEntries([]);
           setQueryMeta(null);
+          setErrorMessage(error instanceof Error ? error.message : "데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
         }
       } finally {
         if (!controller.signal.aborted) {
@@ -97,7 +101,9 @@ export function BoxOfficeDemo() {
   return (
     <main className={styles.page}>
       <section className={styles.content}>
-        <p className={styles.eyebrow}>DATA_MODE: demo</p>
+        <p className={styles.eyebrow}>
+          DATA_MODE: {queryMeta?.dataMode ?? "loading"}
+        </p>
         <h1>영화 박스오피스 목록</h1>
         <p className={styles.description}>
           KOBIS 호출 없이 fixture로 목록 화면(F1)의 조회 상태를 확인합니다.
@@ -127,17 +133,19 @@ export function BoxOfficeDemo() {
           </label>
         </div>
 
-        <div className={styles.demoButtons} aria-label="상태 데모 제어">
-          <button type="button" onClick={() => setScenario("normal")}>
-            일반 조회
-          </button>
-          <button type="button" onClick={() => setScenario("loading")}>
-            로딩 상태 보기
-          </button>
-          <button type="button" onClick={() => setScenario("error")}>
-            오류 상태 보기
-          </button>
-        </div>
+        {queryMeta?.dataMode === "demo" ? (
+          <div className={styles.demoButtons} aria-label="상태 데모 제어">
+            <button type="button" onClick={() => setScenario("normal")}>
+              일반 조회
+            </button>
+            <button type="button" onClick={() => setScenario("loading")}>
+              로딩 상태 보기
+            </button>
+            <button type="button" onClick={() => setScenario("error")}>
+              오류 상태 보기
+            </button>
+          </div>
+        ) : null}
 
         {isLoading ? (
           <StatusPanel
@@ -146,7 +154,7 @@ export function BoxOfficeDemo() {
           />
         ) : hasError ? (
           <StatusPanel
-            title="데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요."
+            title={errorMessage}
             description="오류 상태는 demo 화면에서만 재현한 것이며, 상세 오류는 표시하지 않습니다."
             actionLabel="다시 시도"
             onAction={() => setScenario("normal")}
@@ -168,7 +176,7 @@ export function BoxOfficeDemo() {
             <div className={styles.resultMeta} aria-label="조회 메타정보">
               <strong>조회 {filteredEntries.length}건</strong>
               <span>전체 {entries.length}건</span>
-              <span>출처: demo fixture</span>
+              <span>출처: {queryMeta?.source === "kobis" ? "KOBIS Open API" : queryMeta?.source === "cache" ? "Supabase 캐시" : "demo fixture"}</span>
               {collectedAt ? <span>수집 시각: {collectedAt}</span> : null}
             </div>
             <div className={styles.tableWrap}>
@@ -200,7 +208,7 @@ export function BoxOfficeDemo() {
           </div>
         )}
 
-        <aside className={styles.guide}>
+        {queryMeta?.dataMode === "demo" ? <aside className={styles.guide}>
           <h2>상태 확인 방법</h2>
           <ul>
             <li>성공: 2026-09-07 ~ 2026-09-13 중 날짜를 선택하고 검색어를 비웁니다. “바다”를 검색하면 “바다의 노래”가 표시됩니다.</li>
@@ -209,7 +217,7 @@ export function BoxOfficeDemo() {
             <li>로딩: “로딩 상태 보기”를 선택합니다.</li>
             <li>오류: “오류 상태 보기”를 선택합니다.</li>
           </ul>
-        </aside>
+        </aside> : null}
       </section>
     </main>
   );
