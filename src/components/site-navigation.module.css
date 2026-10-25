@@ -1,0 +1,8 @@
+.header { background: #fff; border-bottom: 1px solid #dbe3ef; }
+.navigation { width: min(1180px, 100%); min-height: 64px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.brand { color: #173f9f; font-weight: 800; letter-spacing: .02em; }
+.links { display: flex; gap: 6px; }
+.link,.active { padding: 9px 12px; border-radius: 8px; font-size: 14px; font-weight: 700; }
+.link { color: #53627a; }
+.link:hover { background: #f1f5ff; color: #173f9f; }
+.active { background: #173f9f; color: #fff; }
